@@ -1,5 +1,5 @@
 package model;
 
-public class EtatTable {
-
+public enum EtatTable {
+    LIBRE, OCCUPEE, RESERVEE, EN_NETTOYAGE
 }
