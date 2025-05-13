@@ -1,5 +1,8 @@
 package menu;
 
-public abstract class ElementMenu {
-
+public interface ElementMenu {
+    String getNom();
+    double getPrix();
+    String getDescription();
+    void afficherMenu();
 }
