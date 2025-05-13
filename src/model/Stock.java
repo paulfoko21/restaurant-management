@@ -1,7 +1,11 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import observer.Observer;
 
 public class Stock {
     private Map<String, Integer> produit;
@@ -10,7 +14,14 @@ public class Stock {
         this.produit = new HashMap<>();
     }
     
-    public void ajouterProduit(String nomProduit, int quantite) {
+    
+    
+    public Map<String, Integer> getProduits() {
+		return produit;
+	}
+
+
+	public void ajouterProduit(String nomProduit, int quantite) {
         if (produit.containsKey(nomProduit)) {
             produit.put(nomProduit, produit.get(nomProduit) + quantite);
         } else {

@@ -3,6 +3,8 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
+import menu.ElementMenu;
+
 public class Menu {
     private List<ElementMenu> plats;
     

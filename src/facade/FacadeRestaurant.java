@@ -3,6 +3,22 @@ package facade;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import commande.Commande;
+import commande.GestionnaireCuisine;
+import commande.Payee;
+import menu.ElementMenu;
+import menu.ElementMenuFactory;
+import model.EtatTable;
+import model.Restaurant;
+import paiement.PaiementCB;
+import paiement.PaiementEspece;
+import paiement.PaiementStrategy;
+import personnel.Cuisinier;
+import personnel.Personnel;
+import personnel.Serveur;
+import reservation.Reservation;
+import table.Table;
+
 public class FacadeRestaurant {
     private Restaurant restaurant;
     private GestionnaireCuisine gestionnaireCuisine;
@@ -181,7 +197,7 @@ public class FacadeRestaurant {
         PaiementStrategy strategie = null;
         switch (methode.toLowerCase()) {
             case "especes":
-                strategie = new PaiementEspeces();
+                strategie = new PaiementEspece();
                 break;
             case "cb":
                 strategie = new PaiementCB();

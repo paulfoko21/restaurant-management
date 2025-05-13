@@ -5,8 +5,13 @@ package commande;
  */
 public class EnCours implements EtatCommande {
     @Override
-    public void traitementCommande(Commande commande) {
-        commande.setEtat(new Payee());
-        System.out.println("Commande passée à l'état : Payée");
+    public void traiterCommande(Commande commande) {
+        System.out.println("Commande #" + commande.getId() + " est prête à être servie");
+        commande.setEtat(new Prete());
+    }
+    
+    @Override
+    public String toString() {
+        return "En cours";
     }
 }

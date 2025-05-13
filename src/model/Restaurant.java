@@ -3,6 +3,11 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
+import commande.Commande;
+import personnel.Personnel;
+import reservation.Reservation;
+import table.Table;
+
 public class Restaurant {
     private String nom;
     private Menu menu;

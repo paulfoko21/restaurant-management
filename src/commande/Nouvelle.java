@@ -1,12 +1,20 @@
 package commande;
 
+import model.EtatTable;
+
 /**
  * Représente une commande nouvellement créée.
  */
 public class Nouvelle implements EtatCommande {
     @Override
-    public void traitementCommande(Commande commande) {
+    public void traiterCommande(Commande commande) {
+        System.out.println("Commande #" + commande.getId() + " créée et envoyée en cuisine");
         commande.setEtat(new EnCours());
-        System.out.println("Commande passée à l'état : En cours");
+        commande.getTable().changerEtat(EtatTable.OCCUPEE);
+    }
+    
+    @Override
+    public String toString() {
+        return "Nouvelle";
     }
 }

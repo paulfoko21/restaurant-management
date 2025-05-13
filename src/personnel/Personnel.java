@@ -1,32 +1,44 @@
 package personnel;
+import table.Table;
 
 /**
  * Classe abstraite représentant un membre du personnel.
  */
-public abstract class Personnel {
-    protected int id;
-    protected String nom;
-    protected String role;
-
+public class Personnel {
+    private int id;
+    private String nom;
+    private String role;
+    private Table tableAssignee;
+    
     public Personnel(int id, String nom, String role) {
         this.id = id;
         this.nom = nom;
         this.role = role;
     }
-
-    public abstract void affecterTable(int numeroTable);
-
-    // Getters & Setters
-
+    
     public int getId() {
         return id;
     }
-
+    
     public String getNom() {
         return nom;
     }
-
+    
     public String getRole() {
         return role;
+    }
+    
+    public Table getTableAssignee() {
+        return tableAssignee;
+    }
+    
+    public void affecterTable(Table table) {
+        this.tableAssignee = table;
+        System.out.println(nom + " a été affecté à la table #" + table.getId());
+    }
+    
+    @Override
+    public String toString() {
+        return nom + " (" + role + ")";
     }
 }

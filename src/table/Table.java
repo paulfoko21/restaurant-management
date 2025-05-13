@@ -1,5 +1,7 @@
 package table;
 
+import model.EtatTable;
+
 public class Table {
     private int id;
     private EtatTable etatTable;

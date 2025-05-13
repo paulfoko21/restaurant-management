@@ -11,170 +11,339 @@ import table.Table;
 import commande.Commande;
 import paiement.PaiementCB;
 import paiement.PaiementEspece;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Scanner;
 
 import java.util.*;
 
 /**
  * Classe principale de simulation interactive du système de gestion de restaurant.
  */
+
 public class Main {
-
-    private static final Scanner scanner = new Scanner(System.in);
-    private static final FacadeRestaurant facade = new FacadeRestaurant();
-    private static final Restaurant restaurant = Restaurant.getInstance();
-
+    private static FacadeRestaurant facade = new FacadeRestaurant();
+    private static Scanner scanner = new Scanner(System.in);
+    
     public static void main(String[] args) {
-        System.out.println("=== SYSTÈME DE GESTION DE RESTAURANT ===");
-
-        initialiserDonnees();
-
+        System.out.println("===== SYSTÈME DE GESTION DE RESTAURANT =====");
+        
         boolean continuer = true;
         while (continuer) {
             afficherMenuPrincipal();
-            System.out.print("Votre choix : ");
-            int choix = scanner.nextInt();
-            scanner.nextLine(); // Consomme le retour chariot
-
+            int choix = saisirEntier("Votre choix: ");
+            
             switch (choix) {
-                case 1 -> afficherMenuRestaurant();
-                case 2 -> effectuerReservation();
-                case 3 -> passerCommande();
-                case 4 -> effectuerPaiement();
-                case 5 -> {
-                    System.out.println("Fermeture du système...");
+                case 1:
+                    gererMenu();
+                    break;
+                case 2:
+                    gererTables();
+                    break;
+                case 3:
+                    gererCommandes();
+                    break;
+                case 4:
+                    gererReservations();
+                    break;
+                case 5:
+                    gererPersonnel();
+                    break;
+                case 6:
+                    gererStock();
+                    break;
+                case 7:
+                    gererRapports();
+                    break;
+                case 0:
                     continuer = false;
-                }
-                default -> System.out.println("Option invalide. Veuillez réessayer.");
+                    System.out.println("Au revoir!");
+                    break;
+                default:
+                    System.out.println("Choix invalide.");
             }
         }
-        System.out.println("=== FIN ===");
+        
+        scanner.close();
     }
-
-    /** Initialise les données par défaut du restaurant */
-    private static void initialiserDonnees() {
-        restaurant.setNom("Le Gourmet Java");
-
-        // Personnel
-        facade.gererPersonnel(new Serveur(1, "Alice", "serveur"));
-        facade.gererPersonnel(new Cuisinier(2, "Bob", "cuisinier"));
-
-        // Stock
-        facade.gererStock("Tomate", 50);
-        facade.gererStock("Poulet", 30);
-
-        // Menu
-        restaurant.getMenu().ajouterPlat(new PlatPrincipal("Poulet Basquaise", "Poulet avec poivrons", 12.5));
-        restaurant.getMenu().ajouterPlat(new Dessert("Tiramisu", "Dessert italien", 5.0));
-        restaurant.getMenu().ajouterPlat(new Boisson("Jus de mangue", "Boisson fruitée", 3.0));
-
-        // Tables
-        restaurant.getTables().add(new Table(1));
-        restaurant.getTables().add(new Table(2));
-    }
-
-    /** Affiche le menu principal */
+    
     private static void afficherMenuPrincipal() {
-        System.out.println("\n--- MENU PRINCIPAL ---");
-        System.out.println("1. Afficher le menu du restaurant");
-        System.out.println("2. Réserver une table");
-        System.out.println("3. Passer une commande");
-        System.out.println("4. Payer une commande");
-        System.out.println("5. Quitter");
+        System.out.println("\nMENU PRINCIPAL:");
+        System.out.println("1. Gérer le menu");
+        System.out.println("2. Gérer les tables");
+        System.out.println("3. Gérer les commandes");
+        System.out.println("4. Gérer les réservations");
+        System.out.println("5. Gérer le personnel");
+        System.out.println("6. Gérer le stock");
+        System.out.println("7. Rapports");
+        System.out.println("0. Quitter");
     }
-
-    /** Affiche les plats du menu */
-    private static void afficherMenuRestaurant() {
-        System.out.println("\n--- MENU ---");
-        System.out.println(restaurant.getMenu());
-    }
-
-    /** Simule une réservation d'une table */
-    private static void effectuerReservation() {
-        System.out.print("Nom du client : ");
-        String nom = scanner.nextLine();
-
-        Table tableDispo = restaurant.getTables().stream()
-                .filter(t -> !t.estOccupee())
-                .findFirst()
-                .orElse(null);
-
-        if (tableDispo == null) {
-            System.out.println("Aucune table disponible !");
-            return;
-        }
-
-        Reservation res = new Reservation(new Date(), nom, tableDispo);
-        restaurant.getReservation().add(res);
-        tableDispo.setOccupee(true);
-
-        System.out.println("Réservation effectuée pour " + nom + " à la table " + tableDispo.getNumero());
-    }
-
-    /** Permet de passer une commande */
-    private static void passerCommande() {
-        System.out.print("Numéro de table : ");
-        int num = scanner.nextInt();
-        scanner.nextLine();
-
-        Table table = restaurant.getTableParNumero(num);
-        if (table == null || !table.estOccupee()) {
-            System.out.println("Table non réservée ou inexistante !");
-            return;
-        }
-
-        ArrayList<ElementMenu> platsChoisis = new ArrayList<>();
-        boolean ajouter = true;
-
-        while (ajouter) {
-            System.out.println("Sélectionnez un plat (nom exact) ou tapez 'fin' pour terminer :");
-            afficherMenuRestaurant();
-            String nomPlat = scanner.nextLine();
-            if (nomPlat.equalsIgnoreCase("fin")) break;
-
-            ElementMenu plat = restaurant.getMenu().trouverParNom(nomPlat);
-            if (plat != null) {
-                platsChoisis.add(plat);
-                System.out.println(plat.getNom() + " ajouté à la commande.");
-            } else {
-                System.out.println("Plat introuvable.");
+    
+    private static void gererMenu() {
+        boolean retour = false;
+        while (!retour) {
+            System.out.println("\nGESTION DU MENU:");
+            System.out.println("1. Afficher le menu");
+            System.out.println("2. Ajouter un plat");
+            System.out.println("3. Supprimer un plat");
+            System.out.println("0. Retour au menu principal");
+            
+            int choix = saisirEntier("Votre choix: ");
+            
+            switch (choix) {
+                case 1:
+                    facade.afficherMenu();
+                    break;
+                case 2:
+                    ajouterPlat();
+                    break;
+                case 3:
+                    facade.afficherMenu();
+                    int index = saisirEntier("Numéro du plat à supprimer: ");
+                    facade.supprimerPlat(index);
+                    break;
+                case 0:
+                    retour = true;
+                    break;
+                default:
+                    System.out.println("Choix invalide.");
             }
         }
-
-        if (!platsChoisis.isEmpty()) {
-            Commande commande = facade.creerCommande(table, platsChoisis);
-            facade.creerSuiviCommande(commande);
-            System.out.println("Commande enregistrée :\n" + commande);
-        } else {
-            System.out.println("Aucune commande enregistrée.");
+    }
+    
+    private static void ajouterPlat() {
+        System.out.println("Type de plat (plat, dessert, boisson): ");
+        String type = scanner.nextLine();
+        
+        System.out.println("Nom du plat: ");
+        String nom = scanner.nextLine();
+        
+        double prix = saisirDouble("Prix: ");
+        
+        System.out.println("Description: ");
+        String description = scanner.nextLine();
+        
+        facade.ajouterPlat(type, nom, prix, description);
+    }
+    
+    private static void gererTables() {
+        boolean retour = false;
+        while (!retour) {
+            System.out.println("\nGESTION DES TABLES:");
+            System.out.println("1. Afficher les tables");
+            System.out.println("2. Changer l'état d'une table");
+            System.out.println("0. Retour au menu principal");
+            
+            int choix = saisirEntier("Votre choix: ");
+            
+            switch (choix) {
+                case 1:
+                    facade.afficherTables();
+                    break;
+                case 2:
+                    int tableId = saisirEntier("Numéro de la table: ");
+                    System.out.println("Nouvel état (LIBRE, OCCUPEE, RESERVEE, EN_NETTOYAGE): ");
+                    String etat = scanner.nextLine();
+                    facade.changerEtatTable(tableId, etat);
+                    break;
+                case 0:
+                    retour = true;
+                    break;
+                default:
+                    System.out.println("Choix invalide.");
+            }
         }
     }
-
-    /** Permet d’effectuer un paiement */
-    private static void effectuerPaiement() {
-        System.out.print("Numéro de table : ");
-        int num = scanner.nextInt();
-        scanner.nextLine();
-
-        Commande commande = restaurant.getCommandeParTable(num);
-        if (commande == null) {
-            System.out.println("Aucune commande trouvée pour cette table.");
-            return;
+    
+    private static void gererCommandes() {
+        boolean retour = false;
+        while (!retour) {
+            System.out.println("\nGESTION DES COMMANDES:");
+            System.out.println("1. Afficher les commandes");
+            System.out.println("2. Créer une commande");
+            System.out.println("3. Ajouter un plat à une commande");
+            System.out.println("4. Traiter une commande");
+            System.out.println("5. Payer une commande");
+            System.out.println("0. Retour au menu principal");
+            
+            int choix = saisirEntier("Votre choix: ");
+            
+            switch (choix) {
+                case 1:
+                    facade.afficherCommandes();
+                    break;
+                case 2:
+                    int tableId = saisirEntier("Numéro de la table: ");
+                    facade.creerCommande(tableId);
+                    break;
+                case 3:
+                    int commandeId = saisirEntier("Numéro de la commande: ");
+                    facade.afficherMenu();
+                    int platIndex = saisirEntier("Numéro du plat à ajouter: ");
+                    facade.ajouterPlatCommande(commandeId, platIndex);
+                    break;
+                case 4:
+                    commandeId = saisirEntier("Numéro de la commande à traiter: ");
+                    facade.traiterCommande(commandeId);
+                    break;
+                case 5:
+                    commandeId = saisirEntier("Numéro de la commande à payer: ");
+                    System.out.println("Méthode de paiement (especes, cb): ");
+                    String methode = scanner.nextLine();
+                    facade.payerCommande(commandeId, methode);
+                    break;
+                case 0:
+                    retour = true;
+                    break;
+                default:
+                    System.out.println("Choix invalide.");
+            }
         }
-
-        System.out.printf("Montant à payer : %.2f €\n", commande.calculerPrix());
-        System.out.print("Méthode de paiement (1. CB | 2. Espèces) : ");
-        int mode = scanner.nextInt();
-        scanner.nextLine();
-
-        if (mode == 1) {
-            new PaiementCB().payer(commande.calculerPrix());
-        } else if (mode == 2) {
-            new PaiementEspece().payer(commande.calculerPrix());
-        } else {
-            System.out.println("Méthode invalide.");
+    }
+    
+    private static void gererReservations() {
+        boolean retour = false;
+        while (!retour) {
+            System.out.println("\nGESTION DES RÉSERVATIONS:");
+            System.out.println("1. Afficher les réservations");
+            System.out.println("2. Créer une réservation");
+            System.out.println("0. Retour au menu principal");
+            
+            int choix = saisirEntier("Votre choix: ");
+            
+            switch (choix) {
+                case 1:
+                    facade.afficherReservations();
+                    break;
+                case 2:
+                    int tableId = saisirEntier("Numéro de la table: ");
+                    System.out.println("Nom du client: ");
+                    String nomClient = scanner.nextLine();
+                    System.out.println("Date (format YYYY-MM-DD HH:MM): ");
+                    String dateStr = scanner.nextLine();
+                    try {
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+                        LocalDateTime dateHeure = LocalDateTime.parse(dateStr, formatter);
+                        facade.creerReservation(tableId, nomClient, dateHeure);
+                    } catch (Exception e) {
+                        System.out.println("Format de date invalide. Utilisez YYYY-MM-DD HH:MM");
+                    }
+                    break;
+                case 0:
+                    retour = true;
+                    break;
+                default:
+                    System.out.println("Choix invalide.");
+            }
         }
-
-        commande.setPayee(true);
-        System.out.println("Commande payée. Merci !");
+    }
+    
+    private static void gererPersonnel() {
+        boolean retour = false;
+        while (!retour) {
+            System.out.println("\nGESTION DU PERSONNEL:");
+            System.out.println("1. Afficher le personnel");
+            System.out.println("2. Ajouter un membre du personnel");
+            System.out.println("3. Affecter un serveur à une table");
+            System.out.println("0. Retour au menu principal");
+            
+            int choix = saisirEntier("Votre choix: ");
+            
+            switch (choix) {
+                case 1:
+                    facade.afficherPersonnel();
+                    break;
+                case 2:
+                    System.out.println("Nom: ");
+                    String nom = scanner.nextLine();
+                    System.out.println("Rôle (serveur, cuisinier, autre): ");
+                    String role = scanner.nextLine();
+                    facade.creerPersonnel(nom, role);
+                    break;
+                case 3:
+                    int personnelId = saisirEntier("ID du personnel: ");
+                    int tableId = saisirEntier("Numéro de la table: ");
+                    facade.affecterPersonnelTable(personnelId, tableId);
+                    break;
+                case 0:
+                    retour = true;
+                    break;
+                default:
+                    System.out.println("Choix invalide.");
+            }
+        }
+    }
+    
+    private static void gererStock() {
+        boolean retour = false;
+        while (!retour) {
+            System.out.println("\nGESTION DU STOCK:");
+            System.out.println("1. Afficher le stock");
+            System.out.println("2. Ajouter un produit au stock");
+            System.out.println("0. Retour au menu principal");
+            
+            int choix = saisirEntier("Votre choix: ");
+            
+            switch (choix) {
+                case 1:
+                    facade.afficherStock();
+                    break;
+                case 2:
+                    System.out.println("Nom du produit: ");
+                    String nomProduit = scanner.nextLine();
+                    int quantite = saisirEntier("Quantité: ");
+                    facade.ajouterProduitStock(nomProduit, quantite);
+                    break;
+                case 0:
+                    retour = true;
+                    break;
+                default:
+                    System.out.println("Choix invalide.");
+            }
+        }
+    }
+    
+    private static void gererRapports() {
+        boolean retour = false;
+        while (!retour) {
+            System.out.println("\nRAPPORTS:");
+            System.out.println("1. Rapport des ventes");
+            System.out.println("0. Retour au menu principal");
+            
+            int choix = saisirEntier("Votre choix: ");
+            
+            switch (choix) {
+                case 1:
+                    facade.genererRapportVentes();
+                    break;
+                case 0:
+                    retour = true;
+                    break;
+                default:
+                    System.out.println("Choix invalide.");
+            }
+        }
+    }
+    
+    private static int saisirEntier(String message) {
+        System.out.print(message);
+        try {
+            int valeur = Integer.parseInt(scanner.nextLine());
+            return valeur;
+        } catch (NumberFormatException e) {
+            System.out.println("Veuillez entrer un nombre entier valide.");
+            return saisirEntier(message);
+        }
+    }
+    
+    private static double saisirDouble(String message) {
+        System.out.print(message);
+        try {
+            double valeur = Double.parseDouble(scanner.nextLine());
+            return valeur;
+        } catch (NumberFormatException e) {
+            System.out.println("Veuillez entrer un nombre décimal valide.");
+            return saisirDouble(message);
+        }
     }
 }

@@ -3,6 +3,9 @@ package reservation;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import model.EtatTable;
+import table.Table;
+
 public class Reservation {
     private LocalDateTime dateHeure;
     private String nomClient;

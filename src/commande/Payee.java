@@ -1,12 +1,19 @@
 package commande;
 
+import model.EtatTable;
+
 /**
  * Représente une commande payée.
  */
 public class Payee implements EtatCommande {
     @Override
-    public void traitementCommande(Commande commande) {
-        commande.setEtat(new Prete());
-        System.out.println("Commande passée à l'état : Prête");
+    public void traiterCommande(Commande commande) {
+        System.out.println("Commande #" + commande.getId() + " est déjà payée. Fin du processus.");
+        commande.getTable().changerEtat(EtatTable.LIBRE);
+    }
+    
+    @Override
+    public String toString() {
+        return "Payée";
     }
 }
