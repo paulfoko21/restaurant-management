@@ -173,7 +173,8 @@ public class Main {
                     facade.afficherCommandes();
                     break;
                 case 2:
-                    int tableId = saisirEntier("Numéro de la table: ");
+                	facade.afficherTables_vides();
+                    int tableId = saisirEntier("\n\nNuméro de la table: ");
                     facade.creerCommande(tableId);
                     break;
                 case 3:

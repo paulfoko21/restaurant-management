@@ -111,6 +111,14 @@ public class FacadeRestaurant {
         }
     }
     
+    public void afficherTables_vides() {
+        System.out.println("TABLES DU RESTAURANT:");
+        for (Table table : restaurant.getTables()) {
+        	if(table.getEtatTable() == EtatTable.LIBRE)
+            System.out.println(table);
+        }
+    }
+    
     public void changerEtatTable(int id, String etat) {
         for (Table table : restaurant.getTables()) {
             if (table.getId() == id) {
