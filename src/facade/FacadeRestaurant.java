@@ -23,6 +23,7 @@ public class FacadeRestaurant {
     private Restaurant restaurant;
     private GestionnaireCuisine gestionnaireCuisine;
     private int idCommandeActuel = 1;
+    private int idReservationActuel = 1;
     
     public FacadeRestaurant() {
         this.restaurant = Restaurant.getInstance();
@@ -150,7 +151,7 @@ public class FacadeRestaurant {
             return;
         }
         
-        if (!table.estLibre()) {
+        if (!table.estLibre() && (table.getEtatTable()!= EtatTable.RESERVEE)) {
             System.out.println("Table #" + tableId + " n'est pas disponible");
             return;
         }
@@ -249,7 +250,7 @@ public class FacadeRestaurant {
             return;
         }
         
-        Reservation nouvelleReservation = new Reservation(dateHeure, nomClient, table);
+        Reservation nouvelleReservation = new Reservation(idReservationActuel, dateHeure, nomClient, table);
         restaurant.ajouterReservation(nouvelleReservation);
         System.out.println("Nouvelle réservation créée: " + nouvelleReservation);
     }
@@ -259,6 +260,25 @@ public class FacadeRestaurant {
         for (Reservation reservation : restaurant.getReservations()) {
             System.out.println(reservation);
         }
+    }
+    
+    public void modifierReservation(int reservationId, LocalDateTime newDatetime) {
+    	Reservation reservation = trouverReservation(reservationId);
+    	reservation.modifierReservation(newDatetime);
+    }
+    
+    public void annulerReservation(int reservationId) {
+    	Reservation reservation = trouverReservation(reservationId);
+    	reservation.annulerReservation();
+    }
+    
+    private Reservation trouverReservation(int reservationId) {
+        for (Reservation reservation : restaurant.getReservations()) {
+            if (reservation.getId() == reservationId) {
+                return reservation;
+            }
+        }
+        return null;
     }
     
     // Méthodes pour le stock

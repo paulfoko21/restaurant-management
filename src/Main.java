@@ -173,21 +173,24 @@ public class Main {
                     facade.afficherCommandes();
                     break;
                 case 2:
-                	facade.afficherTables_vides();
+                	facade.afficherTables();
                     int tableId = saisirEntier("\n\nNuméro de la table: ");
                     facade.creerCommande(tableId);
                     break;
                 case 3:
+                    facade.afficherCommandes();
                     int commandeId = saisirEntier("Numéro de la commande: ");
                     facade.afficherMenu();
                     int platIndex = saisirEntier("Numéro du plat à ajouter: ");
                     facade.ajouterPlatCommande(commandeId, platIndex);
                     break;
                 case 4:
+                    facade.afficherCommandes();
                     commandeId = saisirEntier("Numéro de la commande à traiter: ");
                     facade.traiterCommande(commandeId);
                     break;
                 case 5:
+                    facade.afficherCommandes();
                     commandeId = saisirEntier("Numéro de la commande à payer: ");
                     System.out.println("Méthode de paiement (especes, cb): ");
                     String methode = scanner.nextLine();
@@ -208,15 +211,18 @@ public class Main {
             System.out.println("\nGESTION DES RÉSERVATIONS:");
             System.out.println("1. Afficher les réservations");
             System.out.println("2. Créer une réservation");
+            System.out.println("3. Modifier une réservation");
+            System.out.println("4. Annuler une réservation");
             System.out.println("0. Retour au menu principal");
             
             int choix = saisirEntier("Votre choix: ");
-            
+            int reservationId = 0;
             switch (choix) {
                 case 1:
                     facade.afficherReservations();
                     break;
                 case 2:
+                	facade.afficherTables_vides();
                     int tableId = saisirEntier("Numéro de la table: ");
                     System.out.println("Nom du client: ");
                     String nomClient = scanner.nextLine();
@@ -230,6 +236,22 @@ public class Main {
                         System.out.println("Format de date invalide. Utilisez YYYY-MM-DD HH:MM");
                     }
                     break;
+                case 3:
+                    facade.afficherReservations();
+                    reservationId = saisirEntier("Numéro de la réservation: ");
+                    System.out.println("Date (format YYYY-MM-DD HH:MM): ");
+                    String newdate = scanner.nextLine();
+                    try {
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+                        LocalDateTime date = LocalDateTime.parse(newdate, formatter);
+                        facade.modifierReservation(reservationId, date);
+                    } catch (Exception e) {
+                        System.out.println("Format de date invalide. Utilisez YYYY-MM-DD HH:MM");
+                    }
+                case 4:
+                    facade.afficherReservations();
+                    reservationId = saisirEntier("Numéro de la réservation: ");
+                    facade.annulerReservation(reservationId);
                 case 0:
                     retour = true;
                     break;
@@ -262,7 +284,9 @@ public class Main {
                     facade.creerPersonnel(nom, role);
                     break;
                 case 3:
+                    facade.afficherPersonnel();
                     int personnelId = saisirEntier("ID du personnel: ");
+                    facade.afficherTables();
                     int tableId = saisirEntier("Numéro de la table: ");
                     facade.affecterPersonnelTable(personnelId, tableId);
                     break;

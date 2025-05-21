@@ -22,6 +22,7 @@ public class Commande {
         this.montant = 0;
         this.date = new Date();
         this.table = table;
+        table.changerEtat(EtatTable.OCCUPEE);
     }
     
     public int getId() {

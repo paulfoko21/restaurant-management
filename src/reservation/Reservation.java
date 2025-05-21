@@ -7,18 +7,24 @@ import model.EtatTable;
 import table.Table;
 
 public class Reservation {
+    private int id;
     private LocalDateTime dateHeure;
     private String nomClient;
     private Table table;
     
-    public Reservation(LocalDateTime dateHeure, String nomClient, Table table) {
+    public Reservation(int id, LocalDateTime dateHeure, String nomClient, Table table) {
+        this.id = id;
         this.dateHeure = dateHeure;
         this.nomClient = nomClient;
         this.table = table;
         table.changerEtat(EtatTable.RESERVEE);
     }
     
-    public LocalDateTime getDateHeure() {
+    public int getId() {
+		return id;
+	}
+
+	public LocalDateTime getDateHeure() {
         return dateHeure;
     }
     
