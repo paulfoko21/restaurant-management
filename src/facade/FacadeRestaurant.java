@@ -1,14 +1,21 @@
 package facade;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import commande.Commande;
 import commande.GestionnaireCuisine;
 import commande.Payee;
+import menu.Boisson;
+import menu.Dessert;
 import menu.ElementMenu;
 import menu.ElementMenuFactory;
+import menu.PlatPrincipal;
 import model.EtatTable;
+import model.Ingredient;
 import model.Restaurant;
 import paiement.PaiementCB;
 import paiement.PaiementEspece;
@@ -41,35 +48,85 @@ public class FacadeRestaurant {
         for (int i = 1; i <= 10; i++) {
             restaurant.ajouterTable(new Table(i));
         }
-        
+
         // Ajouter du personnel
         restaurant.ajouterPersonnel(new Serveur(1, "Jean"));
         restaurant.ajouterPersonnel(new Serveur(2, "Marie"));
         restaurant.ajouterPersonnel(new Cuisinier(3, "Pierre"));
         restaurant.ajouterPersonnel(new Cuisinier(4, "Sophie"));
-        
-        // Ajouter des plats au menu
-        restaurant.getMenu().ajouterPlat(ElementMenuFactory.creerPlatPrincipal("Steak Frites", 15.90, "Steak de bœuf avec frites maison"));
-        restaurant.getMenu().ajouterPlat(ElementMenuFactory.creerPlatPrincipal("Saumon Grillé", 18.50, "Filet de saumon grillé aux herbes"));
-        restaurant.getMenu().ajouterPlat(ElementMenuFactory.creerDessert("Tarte aux pommes", 6.50, "Tarte aux pommes maison"));
-        restaurant.getMenu().ajouterPlat(ElementMenuFactory.creerDessert("Mousse au chocolat", 5.80, "Mousse au chocolat noir"));
-        restaurant.getMenu().ajouterPlat(ElementMenuFactory.creerBoisson("Eau minérale", 3.00, "Bouteille d'eau minérale 50cl"));
-        restaurant.getMenu().ajouterPlat(ElementMenuFactory.creerBoisson("Vin rouge", 5.50, "Verre de vin rouge"));
-        
+
+        // Ajouter des plats au menu (avec ingrédients)
+        PlatPrincipal steakFrites = (PlatPrincipal) ElementMenuFactory.creerPlatPrincipal("Steak Frites", 15.90, "Steak de bœuf avec frites maison");
+        steakFrites.ajouterIngredient("Steak", 1);
+        steakFrites.ajouterIngredient("Pommes de terre", 2);
+        restaurant.getMenu().ajouterPlat(steakFrites);
+
+        PlatPrincipal saumon = (PlatPrincipal) ElementMenuFactory.creerPlatPrincipal("Saumon Grillé", 18.50, "Filet de saumon grillé aux herbes");
+        saumon.ajouterIngredient("Saumon", 1);
+        restaurant.getMenu().ajouterPlat(saumon);
+
+        Dessert tartePommes = (Dessert) ElementMenuFactory.creerDessert("Tarte aux pommes", 6.50, "Tarte aux pommes maison");
+        tartePommes.ajouterIngredient("Pommes", 3);
+        restaurant.getMenu().ajouterPlat(tartePommes);
+
+        Dessert mousseChoco = (Dessert) ElementMenuFactory.creerDessert("Mousse au chocolat", 5.80, "Mousse au chocolat noir");
+        mousseChoco.ajouterIngredient("Chocolat", 2);
+        restaurant.getMenu().ajouterPlat(mousseChoco);
+
+        Boisson eau = (Boisson) ElementMenuFactory.creerBoisson("Eau minérale", 3.00, "Bouteille d'eau minérale 50cl");
+        eau.ajouterIngredient("Eau minérale", 1);
+        restaurant.getMenu().ajouterPlat(eau);
+
+        Boisson vin = (Boisson) ElementMenuFactory.creerBoisson("Vin rouge", 5.50, "Verre de vin rouge");
+        vin.ajouterIngredient("Vin rouge", 1);
+        restaurant.getMenu().ajouterPlat(vin);
+
         // Ajouter des produits au stock
-        restaurant.getStock().ajouterProduit("Steak", 20);
-        restaurant.getStock().ajouterProduit("Pommes de terre", 50);
-        restaurant.getStock().ajouterProduit("Saumon", 15);
-        restaurant.getStock().ajouterProduit("Pommes", 30);
-        restaurant.getStock().ajouterProduit("Chocolat", 10);
-        restaurant.getStock().ajouterProduit("Eau minérale", 40);
-        restaurant.getStock().ajouterProduit("Vin rouge", 25);
+        restaurant.getStock().ajouterProduit("Steak", 2);
+        restaurant.getStock().ajouterProduit("Pommes de terre", 5);
+        restaurant.getStock().ajouterProduit("Saumon", 1);
+        restaurant.getStock().ajouterProduit("Pommes", 3);
+        restaurant.getStock().ajouterProduit("Chocolat", 1);
+        restaurant.getStock().ajouterProduit("Eau minérale", 4);
+        restaurant.getStock().ajouterProduit("Vin rouge", 2);
     }
+
     
     // Méthodes pour le menu
     public void afficherMenu() {
         System.out.println(restaurant.getMenu());
     }
+    
+    public void afficherMenuDisponible() {
+        System.out.println("MENU DISPONIBLE (stock suffisant uniquement) :");
+
+        List<ElementMenu> platsDisponibles = new ArrayList<>();
+
+        for (ElementMenu plat : restaurant.getMenu().getPlats()) {
+            boolean disponible = true;
+
+            for (Ingredient ingr : plat.getIngredients()) {
+                int enStock = restaurant.getStock().getQuantite(ingr.getNom());
+                if (enStock < ingr.getQuantite()) {
+                    disponible = false;
+                    break;
+                }
+            }
+
+            if (disponible) {
+                platsDisponibles.add(plat);
+            }
+        }
+
+        if (platsDisponibles.isEmpty()) {
+            System.out.println("Aucun plat disponible actuellement.");
+        } else {
+            for (ElementMenu plat : platsDisponibles) {
+                plat.afficherMenu();
+            }
+        }
+    }
+
     
     public void ajouterPlat(String type, String nom, double prix, String description) {
         ElementMenu nouveauPlat = null;
@@ -106,17 +163,17 @@ public class FacadeRestaurant {
     
     // Méthodes pour les tables
     public void afficherTables() {
-        System.out.println("TABLES DU RESTAURANT:");
+        System.out.println("\nTABLES DU RESTAURANT:");
         for (Table table : restaurant.getTables()) {
-            System.out.println(table);
+            System.out.println("\t" + table);
         }
     }
     
     public void afficherTables_vides() {
-        System.out.println("TABLES DU RESTAURANT:");
+        System.out.println("\nTABLES DU RESTAURANT:");
         for (Table table : restaurant.getTables()) {
         	if(table.getEtatTable() == EtatTable.LIBRE)
-            System.out.println(table);
+            System.out.println("\t" + table);
         }
     }
     
@@ -162,7 +219,7 @@ public class FacadeRestaurant {
     }
     
     public void afficherCommandes() {
-        System.out.println("COMMANDES DU RESTAURANT:");
+        System.out.println("\nCOMMANDES DU RESTAURANT:");
         for (Commande commande : restaurant.getCommandes()) {
             System.out.println(commande);
         }
@@ -183,7 +240,7 @@ public class FacadeRestaurant {
         
         ElementMenu plat = plats.get(platIndex - 1);
         commande.ajouterPlat(plat);
-        System.out.println("Plat ajouté à la commande #" + commandeId + ": " + plat);
+        System.out.println("Plat ajouté à la commande #" + commandeId + ": \n\t" + plat);
     }
     
     public void traiterCommande(int commandeId) {
@@ -252,11 +309,11 @@ public class FacadeRestaurant {
         
         Reservation nouvelleReservation = new Reservation(idReservationActuel, dateHeure, nomClient, table);
         restaurant.ajouterReservation(nouvelleReservation);
-        System.out.println("Nouvelle réservation créée: " + nouvelleReservation);
+        System.out.println("Nouvelle réservation créée: \n\t" + nouvelleReservation);
     }
     
     public void afficherReservations() {
-        System.out.println("RÉSERVATIONS DU RESTAURANT:");
+        System.out.println("\nRÉSERVATIONS DU RESTAURANT:");
         for (Reservation reservation : restaurant.getReservations()) {
             System.out.println(reservation);
         }
@@ -283,20 +340,20 @@ public class FacadeRestaurant {
     
     // Méthodes pour le stock
     public void afficherStock() {
-        System.out.println("STOCK DU RESTAURANT:");
+        System.out.println("\nSTOCK DU RESTAURANT:");
         for (String produit : restaurant.getStock().getProduits().keySet()) {
-            System.out.println(produit + ": " + restaurant.getStock().getQuantite(produit) + " unités");
+            System.out.println("\t" + produit + ": " + restaurant.getStock().getQuantite(produit) + " unités");
         }
     }
     
     public void ajouterProduitStock(String nomProduit, int quantite) {
         restaurant.getStock().ajouterProduit(nomProduit, quantite);
-        System.out.println(quantite + " unités de " + nomProduit + " ajoutées au stock");
+        System.out.println("\t" + quantite + " unités de " + nomProduit + " ajoutées au stock");
     }
     
     // Méthodes pour le personnel
     public void afficherPersonnel() {
-        System.out.println("PERSONNEL DU RESTAURANT:");
+        System.out.println("\nPERSONNEL DU RESTAURANT:");
         for (Personnel p : restaurant.getPersonnel()) {
             System.out.println(p);
         }
@@ -319,7 +376,7 @@ public class FacadeRestaurant {
         }
         
         restaurant.ajouterPersonnel(nouveauPersonnel);
-        System.out.println("Nouveau personnel ajouté: " + nouveauPersonnel);
+        System.out.println("Nouveau personnel ajouté: \n\t" + nouveauPersonnel);
     }
     
     public void affecterPersonnelTable(int personnelId, int tableId) {
@@ -352,16 +409,55 @@ public class FacadeRestaurant {
         personnel.affecterTable(table);
     }
     
-    // Rapports
     public void genererRapportVentes() {
-        System.out.println("RAPPORT DE VENTES:");
+        System.out.println("\n========= RAPPORT DE VENTES =========");
+        
         double totalVentes = 0;
+        Map<String, Integer> compteurPlats = new HashMap<>();
+        Map<String, Integer> consommationStock = new HashMap<>();
+
+        // Traitement des commandes payées
         for (Commande commande : restaurant.getCommandes()) {
             if (commande.getEtat() instanceof Payee) {
                 totalVentes += commande.getMontant();
+
+                commande.getPlats().forEach(plat -> {
+                    // Comptage des plats
+                    compteurPlats.merge(plat.getNom(), 1, Integer::sum);
+
+                    // Simulation de la consommation de stock (ex : 1 plat = 1 unité/ingrédient)
+                    // À ajuster si besoin selon recettes réelles
+                    if (plat.getNom().toLowerCase().contains("steak")) {
+                        consommationStock.merge("Steak", 1, Integer::sum);
+                        consommationStock.merge("Pommes de terre", 1, Integer::sum);
+                    } else if (plat.getNom().toLowerCase().contains("saumon")) {
+                        consommationStock.merge("Saumon", 1, Integer::sum);
+                    } else if (plat.getNom().toLowerCase().contains("tarte")) {
+                        consommationStock.merge("Pommes", 1, Integer::sum);
+                    } else if (plat.getNom().toLowerCase().contains("mousse")) {
+                        consommationStock.merge("Chocolat", 1, Integer::sum);
+                    } else if (plat.getNom().toLowerCase().contains("eau")) {
+                        consommationStock.merge("Eau minérale", 1, Integer::sum);
+                    } else if (plat.getNom().toLowerCase().contains("vin")) {
+                        consommationStock.merge("Vin rouge", 1, Integer::sum);
+                    }
+                });
             }
         }
-        
-        System.out.println("Total des ventes: " + totalVentes + "€");
+
+        // Affichage du total des ventes
+        System.out.printf("Total des ventes : %.2f €%n", totalVentes);
+
+        // Classement des plats les plus vendus
+        System.out.println("\n\t Plats les plus vendus :");
+        compteurPlats.entrySet().stream()
+            .sorted((a, b) -> b.getValue() - a.getValue())
+            .forEach(entry -> System.out.println("- " + entry.getKey() + " : " + entry.getValue() + " ventes"));
+
+        // Flux de stock utilisé
+        System.out.println("\n\t Flux de consommation du stock :");
+        consommationStock.forEach((produit, quantite) ->
+            System.out.println("- " + produit + " consommé : " + quantite + " unités"));
     }
+
 }

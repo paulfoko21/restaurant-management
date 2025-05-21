@@ -1,15 +1,32 @@
 package menu;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import model.Ingredient;
+
 public class PlatPrincipal implements ElementMenu {
     private String nom;
     private double prix;
     private String description;
+    private List<Ingredient> ingredients = new ArrayList<>();
     
     public PlatPrincipal(String nom, double prix, String description) {
         this.nom = nom;
         this.prix = prix;
         this.description = description;
     }
+    
+    @Override
+    public void ajouterIngredient(String nom, int quantite) {
+        ingredients.add(new Ingredient(nom, quantite));
+    }
+
+    @Override
+    public List<Ingredient> getIngredients() {
+        return ingredients;
+    }
+    
     
     @Override
     public String getNom() {

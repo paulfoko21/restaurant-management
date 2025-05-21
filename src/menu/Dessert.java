@@ -1,9 +1,15 @@
 package menu;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import model.Ingredient;
+
 public class Dessert implements ElementMenu {
     private String nom;
     private double prix;
     private String description;
+    private List<Ingredient> ingredients = new ArrayList<>(); 
     
     public Dessert(String nom, double prix, String description) {
         this.nom = nom;
@@ -35,5 +41,15 @@ public class Dessert implements ElementMenu {
     @Override
     public String toString() {
         return "Dessert: " + nom + " - " + prix + "€ (" + description + ")";
+    }
+
+    @Override
+    public void ajouterIngredient(String nom, int quantite) {
+        ingredients.add(new Ingredient(nom, quantite));
+    }
+
+    @Override
+    public List<Ingredient> getIngredients() {
+        return ingredients;
     }
 }

@@ -26,7 +26,7 @@ public class Main {
     private static Scanner scanner = new Scanner(System.in);
     
     public static void main(String[] args) {
-        System.out.println("===== SYSTÈME DE GESTION DE RESTAURANT =====");
+        System.out.println("====================== SYSTÈME DE GESTION DE RESTAURANT ======================");
         
         boolean continuer = true;
         while (continuer) {
@@ -180,7 +180,7 @@ public class Main {
                 case 3:
                     facade.afficherCommandes();
                     int commandeId = saisirEntier("Numéro de la commande: ");
-                    facade.afficherMenu();
+                    facade.afficherMenuDisponible();
                     int platIndex = saisirEntier("Numéro du plat à ajouter: ");
                     facade.ajouterPlatCommande(commandeId, platIndex);
                     break;
