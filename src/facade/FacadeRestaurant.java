@@ -338,7 +338,7 @@ public class FacadeRestaurant {
         return null;
     }
     
-    // Méthodes pour le stock
+    // ici le code pour le stock
     public void afficherStock() {
         System.out.println("\nSTOCK DU RESTAURANT:");
         for (String produit : restaurant.getStock().getProduits().keySet()) {

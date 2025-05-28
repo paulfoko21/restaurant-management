@@ -27,6 +27,7 @@ public class Main {
     
     public static void main(String[] args) {
         System.out.println("====================== SYSTÈME DE GESTION DE RESTAURANT ======================");
+        System.out.println("Pour chaque choisir une option saisir le numero qui est avant !");
         
         boolean continuer = true;
         while (continuer) {
@@ -35,32 +36,32 @@ public class Main {
             
             switch (choix) {
                 case 1:
-                    gererMenu();
+                    Menu();
                     break;
                 case 2:
-                    gererTables();
+                    Tables();
                     break;
                 case 3:
-                    gererCommandes();
+                    Commandes();
                     break;
                 case 4:
-                    gererReservations();
+                    Reservations();
                     break;
                 case 5:
-                    gererPersonnel();
+                    Personnel();
                     break;
                 case 6:
-                    gererStock();
+                    Stock();
                     break;
                 case 7:
-                    gererRapports();
+                    Resume();
                     break;
                 case 0:
                     continuer = false;
-                    System.out.println("Au revoir!");
+                    System.out.println("Vous etes quitte !");
                     break;
                 default:
-                    System.out.println("Choix invalide.");
+                    System.out.println("Choix non valide.");
             }
         }
         
@@ -69,17 +70,17 @@ public class Main {
     
     private static void afficherMenuPrincipal() {
         System.out.println("\nMENU PRINCIPAL:");
-        System.out.println("1. Gérer le menu");
-        System.out.println("2. Gérer les tables");
-        System.out.println("3. Gérer les commandes");
-        System.out.println("4. Gérer les réservations");
-        System.out.println("5. Gérer le personnel");
-        System.out.println("6. Gérer le stock");
-        System.out.println("7. Rapports");
+        System.out.println("1. Gerer le menu");
+        System.out.println("2. Gerer les tables");
+        System.out.println("3. Gerer les commandes");
+        System.out.println("4. Gerer les réservations");
+        System.out.println("5. Gerer le personnel");
+        System.out.println("6. Gerer le stock");
+        System.out.println("7. Voir le Resume");
         System.out.println("0. Quitter");
     }
     
-    private static void gererMenu() {
+    private static void Menu() {
         boolean retour = false;
         while (!retour) {
             System.out.println("\nGESTION DU MENU:");
@@ -95,7 +96,18 @@ public class Main {
                     facade.afficherMenu();
                     break;
                 case 2:
-                    ajouterPlat();
+                	System.out.println("Type de plat (plat, dessert, boisson): ");
+                    String type = scanner.nextLine();
+                    
+                    System.out.println("Nom du plat: ");
+                    String nom = scanner.nextLine();
+                    
+                    double prix = saisirDouble("Prix: ");
+                    
+                    System.out.println("Description: ");
+                    String description = scanner.nextLine();
+                    
+                    facade.ajouterPlat(type, nom, prix, description);
                     break;
                 case 3:
                     facade.afficherMenu();
@@ -111,22 +123,7 @@ public class Main {
         }
     }
     
-    private static void ajouterPlat() {
-        System.out.println("Type de plat (plat, dessert, boisson): ");
-        String type = scanner.nextLine();
-        
-        System.out.println("Nom du plat: ");
-        String nom = scanner.nextLine();
-        
-        double prix = saisirDouble("Prix: ");
-        
-        System.out.println("Description: ");
-        String description = scanner.nextLine();
-        
-        facade.ajouterPlat(type, nom, prix, description);
-    }
-    
-    private static void gererTables() {
+    private static void Tables() {
         boolean retour = false;
         while (!retour) {
             System.out.println("\nGESTION DES TABLES:");
@@ -155,7 +152,7 @@ public class Main {
         }
     }
     
-    private static void gererCommandes() {
+    private static void Commandes() {
         boolean retour = false;
         while (!retour) {
             System.out.println("\nGESTION DES COMMANDES:");
@@ -180,7 +177,7 @@ public class Main {
                 case 3:
                     facade.afficherCommandes();
                     int commandeId = saisirEntier("Numéro de la commande: ");
-                    facade.afficherMenuDisponible();
+
                     int platIndex = saisirEntier("Numéro du plat à ajouter: ");
                     facade.ajouterPlatCommande(commandeId, platIndex);
                     break;
@@ -205,7 +202,7 @@ public class Main {
         }
     }
     
-    private static void gererReservations() {
+    private static void Reservations() {
         boolean retour = false;
         while (!retour) {
             System.out.println("\nGESTION DES RÉSERVATIONS:");
@@ -261,7 +258,7 @@ public class Main {
         }
     }
     
-    private static void gererPersonnel() {
+    private static void Personnel() {
         boolean retour = false;
         while (!retour) {
             System.out.println("\nGESTION DU PERSONNEL:");
@@ -279,13 +276,13 @@ public class Main {
                 case 2:
                     System.out.println("Nom: ");
                     String nom = scanner.nextLine();
-                    System.out.println("Rôle (serveur, cuisinier, autre): ");
+                    System.out.println("Rôle (serveur, cuisinier): ");
                     String role = scanner.nextLine();
                     facade.creerPersonnel(nom, role);
                     break;
                 case 3:
                     facade.afficherPersonnel();
-                    int personnelId = saisirEntier("ID du personnel: ");
+                    int personnelId = saisirEntier("\nSaisi l\'ID du personnel a affecter : ");
                     facade.afficherTables();
                     int tableId = saisirEntier("Numéro de la table: ");
                     facade.affecterPersonnelTable(personnelId, tableId);
@@ -299,7 +296,7 @@ public class Main {
         }
     }
     
-    private static void gererStock() {
+    private static void Stock() {
         boolean retour = false;
         while (!retour) {
             System.out.println("\nGESTION DU STOCK:");
@@ -328,7 +325,7 @@ public class Main {
         }
     }
     
-    private static void gererRapports() {
+    private static void Resume() {
         boolean retour = false;
         while (!retour) {
             System.out.println("\nRAPPORTS:");

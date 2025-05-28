@@ -22,7 +22,7 @@ public class GestionnaireCuisine implements Observer {
     }
     
     public void suivreCommande(Commande commande) {
-        System.out.println("Cuisine: Suivi de la commande #" + commande.getId());
+        System.out.println("Cuisine: Suivi de la commande -> #" + commande.getId());
     }
     
     public void mettreAJour() {
