@@ -174,7 +174,7 @@ public class Main {
                 case 3:
                     facade.afficherCommandes();
                     int commandeId = saisirEntier("Numéro de la commande: ");
-
+                    facade.afficherMenuDisponible();
                     int platIndex = saisirEntier("Numéro du plat à ajouter: ");
                     facade.ajouterPlatCommande(commandeId, platIndex);
                     break;
@@ -261,7 +261,8 @@ public class Main {
             System.out.println("\nGESTION DU PERSONNEL:");
             System.out.println("1. Afficher le personnel");
             System.out.println("2. Ajouter un membre du personnel");
-            System.out.println("3. Affecter un serveur à une table");
+            System.out.println("3. Renvoyer un membre du personnel");
+            System.out.println("4. Affecter un serveur à une table");
             System.out.println("0. Retour au menu principal");
             
             int choix = saisirEntier("Votre choix: ");
@@ -278,6 +279,12 @@ public class Main {
                     facade.creerPersonnel(nom, role);
                     break;
                 case 3:
+                    facade.afficherPersonnel();
+                    int personnelIdToRemove = saisirEntier("\nSaisi l\'ID du personnel a affecter : ");
+                    facade.afficherTables();
+//                    facade.renvoyer(personnelId);
+                    break;
+                case 4:
                     facade.afficherServeur();
                     int personnelId = saisirEntier("\nSaisi l\'ID du personnel a affecter : ");
                     facade.afficherTables();
