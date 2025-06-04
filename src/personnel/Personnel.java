@@ -39,6 +39,9 @@ public class Personnel {
     
     @Override
     public String toString() {
-        return nom + " (" + role + ")";
+    	if(tableAssignee != null) {
+            return "\t#" +id + " "+ nom + " (" + role + ")\t--->\tTable #"+ tableAssignee.getId();
+    	}
+        return "\t#" +id + " "+ nom + " (" + role + ")";
     }
 }

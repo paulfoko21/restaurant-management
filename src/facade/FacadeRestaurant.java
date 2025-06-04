@@ -359,6 +359,15 @@ public class FacadeRestaurant {
         }
     }
     
+    public void afficherServeur() {
+        System.out.println("\nPERSONNEL(Serveur) DU RESTAURANT:");
+        for (Personnel p : restaurant.getPersonnel()) {
+        	if (p.getRole() == "Serveur") {
+                System.out.println(p);
+			}
+        }
+    }
+    
     public void creerPersonnel(String nom, String role) {
         Personnel nouveauPersonnel = null;
         int id = restaurant.getPersonnel().size() + 1;

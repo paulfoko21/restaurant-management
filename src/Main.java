@@ -17,9 +17,6 @@ import java.util.Scanner;
 
 import java.util.*;
 
-/**
- * Classe principale de simulation interactive du système de gestion de restaurant.
- */
 
 public class Main {
     private static FacadeRestaurant facade = new FacadeRestaurant();
@@ -281,7 +278,7 @@ public class Main {
                     facade.creerPersonnel(nom, role);
                     break;
                 case 3:
-                    facade.afficherPersonnel();
+                    facade.afficherServeur();
                     int personnelId = saisirEntier("\nSaisi l\'ID du personnel a affecter : ");
                     facade.afficherTables();
                     int tableId = saisirEntier("Numéro de la table: ");
